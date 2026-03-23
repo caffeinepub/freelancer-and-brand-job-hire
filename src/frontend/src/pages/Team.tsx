@@ -17,7 +17,7 @@ const freelancers = [
     ],
     rating: 4.9,
     reviews: 127,
-    hourlyRate: "$35/hr",
+    hourlyRate: "₹2,900/hr",
     bio: "10+ years editing for YouTube creators and brands. Specializes in fast-paced reels and brand storytelling.",
   },
   {
@@ -27,7 +27,7 @@ const freelancers = [
     skills: ["Illustrator", "Brand Identity", "Typography", "Figma"],
     rating: 4.9,
     reviews: 89,
-    hourlyRate: "$30/hr",
+    hourlyRate: "₹2,500/hr",
     bio: "Creative director turned freelancer. Has designed identities for 200+ businesses across 30 countries.",
   },
   {
@@ -37,7 +37,7 @@ const freelancers = [
     skills: ["React", "Node.js", "TypeScript", "Shopify"],
     rating: 5.0,
     reviews: 64,
-    hourlyRate: "$55/hr",
+    hourlyRate: "₹4,600/hr",
     bio: "Builds blazing-fast websites and web apps. From landing pages to full e-commerce platforms.",
   },
   {
@@ -47,7 +47,7 @@ const freelancers = [
     skills: ["Instagram", "TikTok", "Content Strategy", "Analytics"],
     rating: 4.8,
     reviews: 143,
-    hourlyRate: "$28/hr",
+    hourlyRate: "₹2,300/hr",
     bio: "Grew multiple accounts from 0 to 50K+ followers. Expert in viral content and community engagement.",
   },
   {
@@ -57,7 +57,7 @@ const freelancers = [
     skills: ["WordPress", "Webflow", "SEO", "WooCommerce"],
     rating: 4.9,
     reviews: 98,
-    hourlyRate: "$40/hr",
+    hourlyRate: "₹3,300/hr",
     bio: "Specialized in no-code and WordPress solutions. Delivers clean, SEO-optimized websites on tight deadlines.",
   },
   {
@@ -67,7 +67,7 @@ const freelancers = [
     skills: ["Canva", "Copywriting", "Reels Editing", "Brand Voice"],
     rating: 4.8,
     reviews: 112,
-    hourlyRate: "$25/hr",
+    hourlyRate: "₹2,100/hr",
     bio: "Crafts scroll-stopping content for Instagram and TikTok. Brings brands to life through authentic storytelling.",
   },
 ];

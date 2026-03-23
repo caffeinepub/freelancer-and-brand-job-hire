@@ -15,7 +15,7 @@ const services = [
   {
     icon: <Video className="w-7 h-7" />,
     title: "Video Editing",
-    startingAt: "$49",
+    startingAt: "₹3,999",
     description:
       "From YouTube videos to Instagram Reels and brand commercials — we deliver polished, professional video content that captivates your audience.",
     features: [
@@ -30,7 +30,7 @@ const services = [
   {
     icon: <Palette className="w-7 h-7" />,
     title: "Logo Design",
-    startingAt: "$39",
+    startingAt: "₹2,999",
     description:
       "Get a memorable, versatile logo that represents your brand perfectly. We deliver multiple concepts and unlimited revisions until you're 100% satisfied.",
     features: [
@@ -45,7 +45,7 @@ const services = [
   {
     icon: <Share2 className="w-7 h-7" />,
     title: "Social Media Management",
-    startingAt: "$79/mo",
+    startingAt: "₹6,499/mo",
     description:
       "Grow your online presence with data-driven strategy, consistent posting, and community engagement across all major platforms.",
     features: [
@@ -60,7 +60,7 @@ const services = [
   {
     icon: <Globe className="w-7 h-7" />,
     title: "Website Development",
-    startingAt: "$199",
+    startingAt: "₹16,499",
     description:
       "Beautiful, fast, and mobile-responsive websites built with modern technologies. From landing pages to full e-commerce solutions.",
     features: [

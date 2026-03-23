@@ -154,7 +154,7 @@ export default function HireUs() {
                     <Label htmlFor="name">Your Name</Label>
                     <Input
                       id="name"
-                      placeholder="e.g. John Smith"
+                      placeholder="e.g. Rahul Sharma"
                       value={form.name}
                       onChange={(e) =>
                         setForm((p) => ({ ...p, name: e.target.value }))
@@ -186,10 +186,10 @@ export default function HireUs() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="budget">Your Budget</Label>
+                    <Label htmlFor="budget">Your Budget (₹)</Label>
                     <Input
                       id="budget"
-                      placeholder="e.g. $100–$500"
+                      placeholder="e.g. ₹5,000–₹20,000"
                       value={form.budget}
                       onChange={(e) =>
                         setForm((p) => ({ ...p, budget: e.target.value }))
