@@ -59,6 +59,27 @@ actor {
     };
   };
 
+  // Safe admin check -- returns false instead of trapping for unregistered users
+  public query ({ caller }) func isCallerAdminSafe() : async Bool {
+    if (caller.isAnonymous()) { return false };
+    switch (accessControlState.userRoles.get(caller)) {
+      case (? #admin) { true };
+      case (_) { false };
+    };
+  };
+
+  // Claim admin if no admin has been assigned yet (first-run bootstrap)
+  public shared ({ caller }) func claimAdminIfNone() : async Bool {
+    if (caller.isAnonymous()) { return false };
+    if (not accessControlState.adminAssigned) {
+      accessControlState.userRoles.add(caller, #admin);
+      accessControlState.adminAssigned := true;
+      true;
+    } else {
+      false;
+    };
+  };
+
   // User profile management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -128,4 +149,3 @@ actor {
     freelancerApplications.toArray().sort();
   };
 };
-

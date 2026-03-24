@@ -3,15 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ExternalLink,
   Info,
   Lock,
   LogOut,
   MessageCircle,
+  ShieldCheck,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 import type { FreelancerApplication, HireSubmission } from "../backend";
 import { useActor } from "../hooks/useActor";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
@@ -261,12 +263,25 @@ export default function AdminDashboard() {
   const { identity, login, clear, isLoggingIn, isInitializing } =
     useInternetIdentity();
   const { actor, isFetching: isActorFetching } = useActor();
+  const queryClient = useQueryClient();
+
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [claimMessage, setClaimMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  // Use isCallerAdminSafe (safe for unregistered users) via cast since
+  // backend.ts auto-generated file may lag behind backend.d.ts declarations.
+  const actorAny = actor as any;
 
   const { data: isAdmin, isLoading: isCheckingAdmin } = useQuery({
     queryKey: ["isAdmin", identity?.getPrincipal().toString()],
     queryFn: async () => {
-      if (!actor) return false;
-      return actor.isCallerAdmin();
+      if (!actorAny) return false;
+      return actorAny.isCallerAdminSafe
+        ? actorAny.isCallerAdminSafe()
+        : actorAny.isCallerAdmin();
     },
     enabled: !!actor && !isActorFetching,
   });
@@ -290,6 +305,36 @@ export default function AdminDashboard() {
     },
     enabled: isAdmin === true && !!actor,
   });
+
+  async function handleClaimAdmin() {
+    if (!actorAny) return;
+    setIsClaiming(true);
+    setClaimMessage(null);
+    try {
+      const success: boolean = await actorAny.claimAdminIfNone();
+      if (success) {
+        setClaimMessage({
+          type: "success",
+          text: "✅ Admin access claimed successfully! Refreshing...",
+        });
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+        }, 1200);
+      } else {
+        setClaimMessage({
+          type: "error",
+          text: "An admin account already exists. Contact the site owner.",
+        });
+      }
+    } catch {
+      setClaimMessage({
+        type: "error",
+        text: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsClaiming(false);
+    }
+  }
 
   // Not logged in
   if (!identity) {
@@ -361,7 +406,62 @@ export default function AdminDashboard() {
               Your account does not have admin privileges.
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            {/* Claim Admin Section */}
+            <div className="rounded-xl border-2 border-amber-200 bg-amber-50 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
+                <span className="font-semibold text-amber-900 text-sm">
+                  First time setup?
+                </span>
+              </div>
+              <p className="text-amber-800 text-xs mb-3">
+                If no admin has been assigned yet, you can claim admin access
+                now.
+              </p>
+
+              {claimMessage && (
+                <div
+                  className={`rounded-lg px-3 py-2 text-sm font-medium mb-3 ${
+                    claimMessage.type === "success"
+                      ? "bg-green-100 text-green-800 border border-green-300"
+                      : "bg-red-100 text-red-800 border border-red-300"
+                  }`}
+                  data-ocid={
+                    claimMessage.type === "success"
+                      ? "admin.success_state"
+                      : "admin.error_state"
+                  }
+                >
+                  {claimMessage.text}
+                </div>
+              )}
+
+              <Button
+                className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                onClick={handleClaimAdmin}
+                disabled={isClaiming || claimMessage?.type === "success"}
+                data-ocid="admin.primary_button"
+              >
+                {isClaiming ? (
+                  <>
+                    <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin mr-2 inline-block" />
+                    Claiming...
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-4 h-4 mr-2" />
+                    Claim Admin Access
+                  </>
+                )}
+              </Button>
+
+              <p className="text-xs text-amber-700 mt-2 text-center">
+                ⚠️ This button only works once — the first person to claim
+                becomes the permanent admin.
+              </p>
+            </div>
+
             <Button
               variant="outline"
               className="w-full"

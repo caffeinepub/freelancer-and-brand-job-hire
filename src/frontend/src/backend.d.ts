@@ -35,12 +35,14 @@ export enum UserRole {
 }
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    claimAdminIfNone(): Promise<boolean>;
     getAllSubmissions(): Promise<Array<HireSubmission>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getFreelancerApplications(): Promise<Array<FreelancerApplication>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    isCallerAdminSafe(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     submitFreelancerApplication(name: string, role: string, experience: string, hourlyRate: string, whatsappNumber: string, portfolioLink: string, bio: string): Promise<void>;
     submitHireForm(name: string, serviceNeeded: string, budget: string, whatsappNumber: string): Promise<bigint>;
