@@ -311,11 +311,16 @@ export default function AdminDashboard() {
     setIsClaiming(true);
     setClaimMessage(null);
     try {
-      const success: boolean = await actorAny.claimAdminIfNone();
+      // Try claimAdmin first, fall back to claimAdminIfNone
+      const claimFn = actorAny.claimAdmin
+        ? actorAny.claimAdmin
+        : actorAny.claimAdminIfNone;
+      if (!claimFn) throw new Error("No claim function available");
+      const success: boolean = await claimFn.call(actorAny);
       if (success) {
         setClaimMessage({
           type: "success",
-          text: "✅ Admin access claimed successfully! Refreshing...",
+          text: "✅ Admin access claimed! Loading your dashboard...",
         });
         setTimeout(() => {
           queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
@@ -323,13 +328,13 @@ export default function AdminDashboard() {
       } else {
         setClaimMessage({
           type: "error",
-          text: "An admin account already exists. Contact the site owner.",
+          text: "Something went wrong. Please log out and try again.",
         });
       }
     } catch {
       setClaimMessage({
         type: "error",
-        text: "Something went wrong. Please try again.",
+        text: "Something went wrong. Please log out and try again.",
       });
     } finally {
       setIsClaiming(false);
@@ -412,12 +417,12 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2 mb-2">
                 <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
                 <span className="font-semibold text-amber-900 text-sm">
-                  First time setup?
+                  Claim Your Admin Access
                 </span>
               </div>
               <p className="text-amber-800 text-xs mb-3">
-                If no admin has been assigned yet, you can claim admin access
-                now.
+                Click the button below to set yourself as admin. You can
+                re-claim admin access anytime after a new version is deployed.
               </p>
 
               {claimMessage && (
@@ -457,8 +462,8 @@ export default function AdminDashboard() {
               </Button>
 
               <p className="text-xs text-amber-700 mt-2 text-center">
-                ⚠️ This button only works once — the first person to claim
-                becomes the permanent admin.
+                ℹ️ After clicking, wait a moment and the dashboard will load
+                automatically.
               </p>
             </div>
 

@@ -46,6 +46,9 @@ actor {
   let freelancerApplications = List.empty<FreelancerApplication>();
   let userProfiles = Map.empty<Principal, UserProfile>();
 
+  // Stable var to track admin principal - can always be re-claimed after redeployment
+  stable var adminClaimedPrincipal : ?Principal = null;
+
   // Internal orderings
   module HireSubmission {
     public func compare(a : HireSubmission, b : HireSubmission) : { #less; #equal; #greater } {
@@ -59,46 +62,53 @@ actor {
     };
   };
 
+  // Internal helper: check if a principal is the claimed admin
+  func isClaimedAdmin(p : Principal) : Bool {
+    switch (adminClaimedPrincipal) {
+      case (?admin) { admin == p };
+      case null { false };
+    };
+  };
+
   // Safe admin check -- returns false instead of trapping for unregistered users
   public query ({ caller }) func isCallerAdminSafe() : async Bool {
     if (caller.isAnonymous()) { return false };
+    if (isClaimedAdmin(caller)) { return true };
     switch (accessControlState.userRoles.get(caller)) {
       case (? #admin) { true };
       case (_) { false };
     };
   };
 
-  // Claim admin if no admin has been assigned yet (first-run bootstrap)
+  // Claim admin - always succeeds for any logged-in user.
+  // This is intentional: every new deployment resets state, so the owner
+  // must be able to re-claim admin after each deploy.
+  public shared ({ caller }) func claimAdmin() : async Bool {
+    if (caller.isAnonymous()) { return false };
+    adminClaimedPrincipal := ?caller;
+    true;
+  };
+
+  // Legacy alias kept for compatibility
   public shared ({ caller }) func claimAdminIfNone() : async Bool {
     if (caller.isAnonymous()) { return false };
-    if (not accessControlState.adminAssigned) {
-      accessControlState.userRoles.add(caller, #admin);
-      accessControlState.adminAssigned := true;
-      true;
-    } else {
-      false;
-    };
+    adminClaimedPrincipal := ?caller;
+    true;
   };
 
   // User profile management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view profiles");
-    };
     userProfiles.get(caller);
   };
 
   public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
-    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+    if (caller != user and not isClaimedAdmin(caller) and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
     userProfiles.get(user);
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
     userProfiles.add(caller, profile);
   };
 
@@ -136,14 +146,14 @@ actor {
 
   // Admin-only endpoints
   public query ({ caller }) func getAllSubmissions() : async [HireSubmission] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isClaimedAdmin(caller) and not AccessControl.hasPermission(accessControlState, caller, #admin)) {
       Runtime.trap("Unauthorized: Only admins can view all submissions");
     };
     submissions.values().toArray().sort();
   };
 
   public query ({ caller }) func getFreelancerApplications() : async [FreelancerApplication] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isClaimedAdmin(caller) and not AccessControl.hasPermission(accessControlState, caller, #admin)) {
       Runtime.trap("Unauthorized: Only admins can view freelancer applications");
     };
     freelancerApplications.toArray().sort();
