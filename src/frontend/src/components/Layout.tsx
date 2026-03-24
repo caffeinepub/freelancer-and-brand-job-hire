@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
+import { Lock, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { SiFacebook, SiInstagram, SiLinkedin, SiX } from "react-icons/si";
 
@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
   { label: "Team", href: "/team" },
+  { label: "Get Job", href: "/freelancer" },
   { label: "About", href: "/about" },
   { label: "Hire Us", href: "/hire" },
 ];
@@ -53,6 +54,19 @@ export default function Layout() {
                   {link.label}
                 </Link>
               ))}
+              {/* Admin link — styled distinctly */}
+              <Link
+                to="/admin"
+                className={`ml-1 px-3 py-1.5 rounded-md text-sm font-medium border transition-colors flex items-center gap-1.5 ${
+                  currentPath === "/admin"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-primary/40 text-primary hover:bg-primary/5 hover:border-primary"
+                }`}
+                data-ocid="admin.link"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                Admin
+              </Link>
             </nav>
 
             {/* Desktop CTA */}
@@ -102,6 +116,20 @@ export default function Layout() {
                 {link.label}
               </Link>
             ))}
+            {/* Admin link in mobile */}
+            <Link
+              to="/admin"
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium border transition-colors ${
+                currentPath === "/admin"
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-primary/40 text-primary hover:bg-primary/5"
+              }`}
+              data-ocid="admin.link"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              Admin Panel
+            </Link>
             <div className="pt-2">
               <Link to="/hire" onClick={() => setMobileOpen(false)}>
                 <Button
@@ -234,6 +262,14 @@ export default function Layout() {
                     Hire Us
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    to="/freelancer"
+                    className="hover:text-white transition-colors"
+                  >
+                    Join as Freelancer
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -269,17 +305,27 @@ export default function Layout() {
               &copy; {new Date().getFullYear()} F&B JOB Hire. All rights
               reserved.
             </span>
-            <span>
-              Built with ❤️ using{" "}
-              <a
-                href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
-                className="hover:text-white/70 transition-colors underline"
-                target="_blank"
-                rel="noopener noreferrer"
+            <div className="flex items-center gap-4">
+              <span>
+                Built with ❤️ using{" "}
+                <a
+                  href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
+                  className="hover:text-white/70 transition-colors underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  caffeine.ai
+                </a>
+              </span>
+              <Link
+                to="/admin"
+                className="flex items-center gap-1 hover:text-white/70 transition-colors text-white/40"
+                data-ocid="admin.link"
               >
-                caffeine.ai
-              </a>
-            </span>
+                <Lock className="w-3 h-3" />
+                Admin
+              </Link>
+            </div>
           </div>
         </div>
       </footer>

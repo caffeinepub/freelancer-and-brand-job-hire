@@ -8,6 +8,11 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
 export const Time = IDL.Int;
 export const HireSubmission = IDL.Record({
   'name' : IDL.Text,
@@ -16,9 +21,41 @@ export const HireSubmission = IDL.Record({
   'budget' : IDL.Text,
   'serviceNeeded' : IDL.Text,
 });
+export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const FreelancerApplication = IDL.Record({
+  'bio' : IDL.Text,
+  'portfolioLink' : IDL.Text,
+  'name' : IDL.Text,
+  'role' : IDL.Text,
+  'hourlyRate' : IDL.Text,
+  'experience' : IDL.Text,
+  'whatsappNumber' : IDL.Text,
+  'timestamp' : Time,
+});
 
 export const idlService = IDL.Service({
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'getAllSubmissions' : IDL.Func([], [IDL.Vec(HireSubmission)], ['query']),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getFreelancerApplications' : IDL.Func(
+      [],
+      [IDL.Vec(FreelancerApplication)],
+      ['query'],
+    ),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'submitFreelancerApplication' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [],
+      [],
+    ),
   'submitHireForm' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [IDL.Nat],
@@ -29,6 +66,11 @@ export const idlService = IDL.Service({
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
   const Time = IDL.Int;
   const HireSubmission = IDL.Record({
     'name' : IDL.Text,
@@ -37,9 +79,41 @@ export const idlFactory = ({ IDL }) => {
     'budget' : IDL.Text,
     'serviceNeeded' : IDL.Text,
   });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const FreelancerApplication = IDL.Record({
+    'bio' : IDL.Text,
+    'portfolioLink' : IDL.Text,
+    'name' : IDL.Text,
+    'role' : IDL.Text,
+    'hourlyRate' : IDL.Text,
+    'experience' : IDL.Text,
+    'whatsappNumber' : IDL.Text,
+    'timestamp' : Time,
+  });
   
   return IDL.Service({
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'getAllSubmissions' : IDL.Func([], [IDL.Vec(HireSubmission)], ['query']),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getFreelancerApplications' : IDL.Func(
+        [],
+        [IDL.Vec(FreelancerApplication)],
+        ['query'],
+      ),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'submitFreelancerApplication' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
     'submitHireForm' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [IDL.Nat],

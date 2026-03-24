@@ -160,15 +160,25 @@ export default function Team() {
                 ))}
               </div>
 
-              <Link to="/hire">
-                <Button
-                  variant="outline"
-                  className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold transition-colors"
-                  data-ocid={`team.item.${i + 1}.primary_button`}
-                >
-                  View Profile
-                </Button>
-              </Link>
+              <div className="flex flex-col gap-2">
+                <Link to="/hire">
+                  <Button
+                    variant="outline"
+                    className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold transition-colors"
+                    data-ocid={`team.item.${i + 1}.secondary_button`}
+                  >
+                    Hire
+                  </Button>
+                </Link>
+                <Link to="/freelancer">
+                  <Button
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors"
+                    data-ocid={`team.item.${i + 1}.primary_button`}
+                  >
+                    Get Job
+                  </Button>
+                </Link>
+              </div>
             </motion.div>
           ))}
         </div>

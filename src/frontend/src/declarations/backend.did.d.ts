@@ -10,6 +10,16 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface FreelancerApplication {
+  'bio' : string,
+  'portfolioLink' : string,
+  'name' : string,
+  'role' : string,
+  'hourlyRate' : string,
+  'experience' : string,
+  'whatsappNumber' : string,
+  'timestamp' : Time,
+}
 export interface HireSubmission {
   'name' : string,
   'whatsappNumber' : string,
@@ -18,8 +28,24 @@ export interface HireSubmission {
   'serviceNeeded' : string,
 }
 export type Time = bigint;
+export interface UserProfile { 'name' : string }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
 export interface _SERVICE {
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'getAllSubmissions' : ActorMethod<[], Array<HireSubmission>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getFreelancerApplications' : ActorMethod<[], Array<FreelancerApplication>>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'submitFreelancerApplication' : ActorMethod<
+    [string, string, string, string, string, string, string],
+    undefined
+  >,
   'submitHireForm' : ActorMethod<[string, string, string, string], bigint>,
 }
 export declare const idlService: IDL.ServiceClass;

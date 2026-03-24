@@ -7,6 +7,7 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
+export type Time = bigint;
 export interface HireSubmission {
     name: string;
     whatsappNumber: string;
@@ -14,8 +15,33 @@ export interface HireSubmission {
     budget: string;
     serviceNeeded: string;
 }
-export type Time = bigint;
+export interface FreelancerApplication {
+    bio: string;
+    portfolioLink: string;
+    name: string;
+    role: string;
+    hourlyRate: string;
+    experience: string;
+    whatsappNumber: string;
+    timestamp: Time;
+}
+export interface UserProfile {
+    name: string;
+}
+export enum UserRole {
+    admin = "admin",
+    user = "user",
+    guest = "guest"
+}
 export interface backendInterface {
+    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     getAllSubmissions(): Promise<Array<HireSubmission>>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUserRole(): Promise<UserRole>;
+    getFreelancerApplications(): Promise<Array<FreelancerApplication>>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
+    isCallerAdmin(): Promise<boolean>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    submitFreelancerApplication(name: string, role: string, experience: string, hourlyRate: string, whatsappNumber: string, portfolioLink: string, bio: string): Promise<void>;
     submitHireForm(name: string, serviceNeeded: string, budget: string, whatsappNumber: string): Promise<bigint>;
 }

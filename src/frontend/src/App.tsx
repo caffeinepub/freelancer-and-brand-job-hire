@@ -4,8 +4,10 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { createRootRoute, createRoute } from "@tanstack/react-router";
 import Layout from "./components/Layout";
 import About from "./pages/About";
+import AdminDashboard from "./pages/AdminDashboard";
 import HireUs from "./pages/HireUs";
 import Home from "./pages/Home";
+import JoinFreelancer from "./pages/JoinFreelancer";
 import Services from "./pages/Services";
 import Team from "./pages/Team";
 
@@ -45,12 +47,26 @@ const aboutRoute = createRoute({
   component: About,
 });
 
+const freelancerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/freelancer",
+  component: JoinFreelancer,
+});
+
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin",
+  component: AdminDashboard,
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   servicesRoute,
   teamRoute,
   hireRoute,
   aboutRoute,
+  freelancerRoute,
+  adminRoute,
 ]);
 
 const router = createRouter({ routeTree });

@@ -26,6 +26,8 @@ import { toast } from "sonner";
 
 const UPI_ID = "parthparrma1584@fam";
 const UPI_LINK = `upi://pay?pa=${UPI_ID}&pn=FB+JOB+Hire`;
+const QR_IMAGE =
+  "/assets/uploads/img_20260324_014812-019d1c5a-22ab-75dc-8f43-a5595db2f79d-2.jpg";
 
 const services = [
   "Video Editing",
@@ -67,7 +69,8 @@ export default function HireUs() {
     whatsappNumber: "",
   });
   const [submitted, setSubmitted] = useState(false);
-  const mutation = useSubmitHireForm();
+  const [showQR, setShowQR] = useState(false);
+  const { mutateAsync, isPending, isActorLoading } = useSubmitHireForm();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,11 +84,16 @@ export default function HireUs() {
       return;
     }
     try {
-      await mutation.mutateAsync(form);
+      await mutateAsync(form);
       setSubmitted(true);
       toast.success("Your request was submitted successfully!");
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg === "Not connected") {
+        toast.error("Still loading, please try again in a moment.");
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -220,13 +228,13 @@ export default function HireUs() {
                   <Button
                     type="submit"
                     className="w-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 h-11"
-                    disabled={mutation.isPending}
+                    disabled={isPending || isActorLoading}
                     data-ocid="hire_form.submit_button"
                   >
-                    {mutation.isPending ? (
+                    {isPending || isActorLoading ? (
                       <>
                         <Loader2 className="mr-2 w-4 h-4 animate-spin" />{" "}
-                        Submitting...
+                        {isActorLoading ? "Loading..." : "Submitting..."}
                       </>
                     ) : (
                       "Get Started →"
@@ -268,6 +276,31 @@ export default function HireUs() {
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </button>
+                    </div>
+
+                    {/* QR Code Toggle */}
+                    <div className="mt-3 text-center">
+                      <button
+                        type="button"
+                        onClick={() => setShowQR((v) => !v)}
+                        className="text-xs text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+                      >
+                        {showQR ? "Hide QR Code" : "Show QR Code"}
+                      </button>
+                      {showQR && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.25 }}
+                          className="mt-3 flex justify-center"
+                        >
+                          <img
+                            src={QR_IMAGE}
+                            alt="UPI QR Code - parthparrma1584@fam"
+                            className="w-52 h-auto rounded-xl border border-border shadow-md"
+                          />
+                        </motion.div>
+                      )}
                     </div>
                   </div>
                 </form>
